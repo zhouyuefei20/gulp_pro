@@ -1,1 +1,1 @@
-div{width:100px;height:100px;background:#000;font-size:24px;white-space:nowrap}
+div{-webkit-transition:all 1s;-o-transition:all 1s;-moz-transition:all 1s;transition:all 1s;display:-webkit-box;display:-webkit-flex;display:-moz-box;display:-ms-flexbox;display:flex}
