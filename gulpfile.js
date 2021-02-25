@@ -15,6 +15,8 @@ const imagemin = require('gulp-imagemin') //压缩images
 const del = require('del')
 //启动服务器
 const webserver = require('gulp-webserver')
+//导入组件
+const fileinclude = require('gulp-file-include')
 
 const cssHandler = function () { //@gulp4
   return gulp.src('./src/css/*.css').
@@ -34,7 +36,10 @@ const jsHandler = function () { //@gulp4
 }
 
 const htmlHandler = function () { //@gulp4
-  return gulp.src('./src/pages/*.html').pipe(htmlmin({
+  return gulp.src('./src/pages/*.html').pipe(fileinclude({
+    prefix: '@-@',
+    basepath: './src/components'
+  })).pipe(htmlmin({
     removeComments: true, //清除HTML注释
     collapseWhitespace: true, //压缩HTML
     collapseBooleanAttributes: true, //省略布尔属性的值 <input checked="true"/> ==> <input />
@@ -61,15 +66,20 @@ const webserverHandler = function () {
     livereload: true,
     host: 'www.zhou.com',
     port: 80,
-    open: './pages/index.html'
+    open: './pages/index.html',
+    proxies: [{
+      source: '/gt',
+      target: 'https://gank.io'
+    }]
   }))
 }
-module.exports.cssHandler = cssHandler
-module.exports.scssHandler = scssHandler
-module.exports.jsHandler = jsHandler
-module.exports.htmlHandler = htmlHandler
-module.exports.imageHandler = imageHandler
-module.exports.delHandler = delHandler
-module.exports.webserverHandler = webserverHandler
 
-module.exports.default = gulp.series(delHandler, gulp.parallel(cssHandler, scssHandler, jsHandler, htmlHandler, imageHandler), webserverHandler)
+const watchHandler = function () {
+  gulp.watch('./src/css/**', cssHandler)
+  gulp.watch('./src/scss/**', scssHandler)
+  gulp.watch('./src/js/**', jsHandler)
+  gulp.watch('./src/pages/**', htmlHandler)
+}
+
+
+module.exports.default = gulp.series(delHandler, gulp.parallel(cssHandler, scssHandler, jsHandler, htmlHandler, imageHandler), webserverHandler, watchHandler)
